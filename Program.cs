@@ -78,7 +78,7 @@
                 }
                 else if (command[0] == "list")
                 {
-                    print();
+                    print(command);
                 }
                 else
                 {
@@ -93,20 +93,34 @@
         {
             if (commandLine.Length < 2)
             {
+                string[] ph = new string[1];
+                string[] ad = new string[1];            
                 Console.Write("personal name: ");
                 string persname = Console.ReadLine();
                 Console.Write("surname: ");
                 string surname = Console.ReadLine();
                 Console.Write("phone: ");
-                string phone = Console.ReadLine();
-
-
+                ph[0] = Console.ReadLine();
+                Console.Write("address: ");
+                ad[0] = Console.ReadLine();
+                Console.Write("birthdate: ");
+                string birthdate = Console.ReadLine();
+                contactList.Add(new Person(persname, surname, ph, ad, birthdate));
 
             }
             else
             {
-                // NYI!
-                Console.WriteLine("Not yet implemented: new /person/");
+                int comlength = commandLine.Length;
+                string tosplit = "";
+                int i = 1;
+                while(i < comlength) { 
+                    tosplit = tosplit+" "+ commandLine[i];
+                    i++;
+                }
+                string[] splits = tosplit.Split("|");
+                string[] phonesplits = splits[2].Split(";");
+                string[] addresssplits = splits[3].Split(";");
+                contactList.Add(new Person(splits[0], splits[1], phonesplits, addresssplits, splits[4]));
             }
         }
         //saves the array of objects to a file
@@ -125,7 +139,7 @@
                     {
                         
                         if (p != null)
-                            outfile.Write($"{p.Persname}|{p.Surname}|{getString(p.Phone)}|{getString(p.Address)}|{p.Birthdate}");
+                            outfile.WriteLine($"{p.Persname}|{p.Surname}|{getString(p.Phone)}|{getString(p.Address)}|{p.Birthdate}");
                     }
                 }
             }
@@ -166,8 +180,8 @@
                             string[] attrs = line.Split('|');
                             string[] phones = attrs[2].Split(';');
                             string[] addresses = attrs[3].Split(';');
-                            Person p = new Person(attrs[0], attrs[1], phones, addresses, attrs[4]);
-                            contactList.Add(p);
+                            Person person = new Person(attrs[0], attrs[1], phones, addresses, attrs[4]);
+                            contactList.Add(person);
                         }
                 }
             }
@@ -183,28 +197,32 @@
             return path;
         }
         //prints all the Objects in the array
-        public static void print()
+        public static void print(string[] commandLine)
         {
-            foreach(Person p in contactList)
+            if (commandLine.Length < 2)
             {
-                if (p != null)
+
+                foreach (Person p in contactList)
                 {
-                    Console.WriteLine($"Name: {p.Persname} {p.Surname}");
-                    int ind = 1;
-                    Console.WriteLine("Phone: ");
-                    foreach (string a in p.Phone)
+                    if (p != null)
                     {
-                        Console.WriteLine($"{ind}: {a}");
-                        ind++;
+                        Console.WriteLine($"Name: {p.Persname} {p.Surname}");
+                        int ind = 1;
+                        Console.WriteLine("Phone: ");
+                        foreach (string a in p.Phone)
+                        {
+                            Console.WriteLine($"{ind}: {a}");
+                            ind++;
+                        }
+                        int index = 1;
+                        Console.WriteLine("Address: ");
+                        foreach (string b in p.Address)
+                        {
+                            Console.WriteLine($"{index}: {b}");
+                        }
+                        Console.WriteLine($"Birthdate: {p.Birthdate}");
+                        Console.WriteLine();
                     }
-                    int index = 1;
-                    Console.WriteLine("Address: ");
-                    foreach (string b in p.Address)
-                    {
-                        Console.WriteLine($"{index}: {b}");
-                    }
-                    Console.WriteLine($"Birthdate: {p.Birthdate}");
-                    Console.WriteLine();
                 }
             }
 
