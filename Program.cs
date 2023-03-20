@@ -199,35 +199,43 @@
         //prints all the Objects in the array
         public static void print(string[] commandLine)
         {
-            if (commandLine.Length < 2)
+            foreach (Person p in contactList)
             {
-
-                foreach (Person p in contactList)
+                if (p != null)
                 {
-                    if (p != null)
+                    if (commandLine.Length < 2)
                     {
-                        Console.WriteLine($"Name: {p.Persname} {p.Surname}");
-                        int ind = 1;
-                        Console.WriteLine("Phone: ");
-                        foreach (string a in p.Phone)
+                        printPerson(p);
+                    }
+                    else
+                    {
+                        if (commandLine[1] == p.Persname)
                         {
-                            Console.WriteLine($"{ind}: {a}");
-                            ind++;
+                            printPerson(p);
                         }
-                        int index = 1;
-                        Console.WriteLine("Address: ");
-                        foreach (string b in p.Address)
-                        {
-                            Console.WriteLine($"{index}: {b}");
-                        }
-                        Console.WriteLine($"Birthdate: {p.Birthdate}");
-                        Console.WriteLine();
                     }
                 }
-            }
+            }      
+        }
 
-
-            
+        private static void printPerson(Person p)
+        {
+                Console.WriteLine($"Name: {p.Persname} {p.Surname}");
+                int ind = 1;
+                Console.WriteLine("Phone: ");
+                foreach (string a in p.Phone)
+                {
+                    Console.WriteLine($"{ind}: {a}");
+                    ind++;
+                }
+                int index = 1;
+                Console.WriteLine("Address: ");
+                foreach (string b in p.Address)
+                {
+                    Console.WriteLine($"{index}: {b}");
+                }
+                Console.WriteLine($"Birthdate: {p.Birthdate}");
+                Console.WriteLine();
         }
 
         //prints all available commands
