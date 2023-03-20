@@ -48,7 +48,6 @@
         }
         public static void Main(string[] args)
         {
-            string lastFileName = "address.lis";
             string[] command;
             Console.WriteLine("Hello and welcome to the contact list\nType 'help' for help.");
             do
@@ -61,11 +60,11 @@
                 }
                 else if (command[0] == "load")
                 {
-                    lastFileName = LoadFile(command);
+                    LoadFile(command);
                 }
                 else if (command[0] == "save")
                 {
-                    SaveFile(lastFileName, command);
+                    SaveFile(command);
                 }
                 else if (command[0] == "new")
                 {
@@ -105,8 +104,9 @@
             }
         }
         //saves the array of objects to a file
-        private static void SaveFile(string lastFileName, string[] commandLine)
+        private static void SaveFile(string[] commandLine)
         {
+            string lastFileName = "address.lis";
             if (commandLine.Length < 2)
             {
                 using (StreamWriter outfile = new StreamWriter(lastFileName))
@@ -125,14 +125,16 @@
             }
         }
         //adds person objects from the file to the array of objects
-        private static string LoadFile(string[] commandLine)
+        private static void LoadFile(string[] commandLine)
         {
             string lastFileName;
             {
                 if (commandLine.Length < 2)
-                {   
+                {
                     lastFileName = "address.lis.txt";
-                    using (StreamReader infile = new StreamReader(GetPath(lastFileName)))
+                }
+                else { lastFileName= commandLine[1];}
+                using (StreamReader infile = new StreamReader(GetPath(lastFileName)))
                     {
                         string line;
                         while ((line = infile.ReadLine()) != null)
@@ -150,36 +152,10 @@
                                 }
                             }
                         }
-                    }
-                }
-                else
-                {
-                    lastFileName = commandLine[1];
-
-                    using (StreamReader infile = new StreamReader(GetPath(lastFileName)))
-                    {
-                        string line;
-                        while ((line = infile.ReadLine()) != null)
-                        {
-                            string[] attrs = line.Split('|');
-                            string[] phones = attrs[2].Split(';');
-                            string[] addresses = attrs[3].Split(';');
-                            Person p = new Person(attrs[0], attrs[1], phones[0], addresses[0], "unknown");
-                            for (int ix = 0; ix < contactList.Length; ix++)
-                            {
-                                if (contactList[ix] == null)
-                                {
-                                    contactList[ix] = p;
-                                    break;
-                                }
-                            }
-                        }
-                    }
                 }
             }
-
-            return lastFileName;
         }
+
         //returns a string which is path of a textfile in the project directory
         public static string GetPath(string commandLine)
         {
