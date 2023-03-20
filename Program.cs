@@ -1,45 +1,92 @@
 ﻿namespace dtp6_contacts
 {
+    //TODO: implement methods: save, delete , edit, list and new.
     class MainClass
     {
+        //Array of Person objects.
         static Person[] contactList = new Person[100];
         class Person
         {
-            public string persname, surname, phone, address, birthdate;
+            private string persname, surname, phone, address, birthdate;
+
+            public string Persname
+            {
+                get { return persname; }
+                set { persname = value; }
+            }
+
+            public string Surname
+            {
+                get { return surname; }
+                set { surname = value; }
+            }
+            public string Phone
+            {
+                get { return phone; }
+                set { phone = value; }
+            }
+            public string Address
+            {
+                get { return address; }
+                set { address = value; }
+            }
+            public string Birthdate
+            {
+                get { return birthdate; }
+                set { birthdate = value; }
+            }
+
+
+            public Person(string persname, string surname, string phone, string address, string birthdate)
+            {
+                this.persname = persname;
+                this.surname = surname;
+                this.phone = phone;
+                this.address = address;
+                this.birthdate = birthdate;
+            }
         }
         public static void Main(string[] args)
         {
             string lastFileName = "address.lis";
-            string[] commandLine;
-            Console.WriteLine("Hello and welcome to the contact list\nType 'Help' for help.");
-            Help();
+            string[] command;
+            Console.WriteLine("Hello and welcome to the contact list\nType 'help' for help.");
             do
             {
                 Console.Write($"Command: ");
-                commandLine = Console.ReadLine().Split(' ');
-                if (commandLine[0] == "load")
+                command = Console.ReadLine().Split(' ');
+                if (command[0] == "quit")
                 {
-                    lastFileName = LoadFile(commandLine);
+                    Console.WriteLine("Goodbye");
                 }
-                else if (commandLine[0] == "save")
+                else if (command[0] == "load")
                 {
-                    SaveFile(lastFileName, commandLine);
+                    lastFileName = LoadFile(command);
                 }
-                else if (commandLine[0] == "new")
+                else if (command[0] == "save")
                 {
-                    New(commandLine);
+                    SaveFile(lastFileName, command);
                 }
-                else if (commandLine[0] == "help")
+                else if (command[0] == "new")
+                {
+                    New(command);
+                }
+                else if (command[0] == "help")
                 {
                     Help();
                 }
+                else if (command[0] == "list")
+                {
+                    print();
+                }
                 else
                 {
-                    Console.WriteLine($"Unknown command: '{commandLine[0]}'");
+                    Console.WriteLine($"Unknown command: '{command[0]}'");
                 }
-            } while (commandLine[0] != "quit");
+            } while (command[0] != "quit");
         }
 
+        //adds new person object to the list to be implemented
         private static void New(string[] commandLine)
         {
             if (commandLine.Length < 2)
@@ -57,7 +104,7 @@
                 Console.WriteLine("Not yet implemented: new /person/");
             }
         }
-
+        //saves the array of objects to a file
         private static void SaveFile(string lastFileName, string[] commandLine)
         {
             if (commandLine.Length < 2)
@@ -67,7 +114,7 @@
                     foreach (Person p in contactList)
                     {
                         if (p != null)
-                            outfile.WriteLine($"{p.persname};{p.surname};{p.phone};{p.address};{p.birthdate}");
+                            outfile.WriteLine($"{p.Persname};{p.Surname};{p.Phone};{p.Address};{p.Birthdate}");
                     }
                 }
             }
@@ -77,28 +124,23 @@
                 Console.WriteLine("Not yet implemented: save /file/");
             }
         }
-
+        //adds person objects from the file to the array of objects
         private static string LoadFile(string[] commandLine)
         {
             string lastFileName;
             {
                 if (commandLine.Length < 2)
-                {
-                    lastFileName = "address.lis";
-                    using (StreamReader infile = new StreamReader(lastFileName))
+                {   
+                    lastFileName = "address.lis.txt";
+                    using (StreamReader infile = new StreamReader(GetPath(lastFileName)))
                     {
                         string line;
                         while ((line = infile.ReadLine()) != null)
                         {
-                            Console.WriteLine(line);
                             string[] attrs = line.Split('|');
-                            Person p = new Person();
-                            p.persname = attrs[0];
-                            p.surname = attrs[1];
                             string[] phones = attrs[2].Split(';');
-                            p.phone = phones[0];
                             string[] addresses = attrs[3].Split(';');
-                            p.address = addresses[0];
+                            Person p = new Person(attrs[0], attrs[1], phones[0], addresses[0],"unknown");
                             for (int ix = 0; ix < contactList.Length; ix++)
                             {
                                 if (contactList[ix] == null)
@@ -113,20 +155,16 @@
                 else
                 {
                     lastFileName = commandLine[1];
-                    using (StreamReader infile = new StreamReader(lastFileName))
+
+                    using (StreamReader infile = new StreamReader(GetPath(lastFileName)))
                     {
                         string line;
                         while ((line = infile.ReadLine()) != null)
                         {
-                            Console.WriteLine(line);
                             string[] attrs = line.Split('|');
-                            Person p = new Person();
-                            p.persname = attrs[0];
-                            p.surname = attrs[1];
                             string[] phones = attrs[2].Split(';');
-                            p.phone = phones[0];
                             string[] addresses = attrs[3].Split(';');
-                            p.address = addresses[0];
+                            Person p = new Person(attrs[0], attrs[1], phones[0], addresses[0], "unknown");
                             for (int ix = 0; ix < contactList.Length; ix++)
                             {
                                 if (contactList[ix] == null)
@@ -142,7 +180,29 @@
 
             return lastFileName;
         }
+        //returns a string which is path of a textfile in the project directory
+        public static string GetPath(string commandLine)
+        {
+            string lastFileName;
+            string projectDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName;
+            lastFileName = commandLine;
+            string path = projectDirectory + "\\" + lastFileName;
+            return path;
+        }
+        //prints all the Objects in the array
+        public static void print()
+        {
+            foreach(Person p in contactList)
+            {
+                if (p != null)
+                {
+                    Console.WriteLine($"Name: {p.Persname} {p.Surname}\nPhone: {p.Phone}\nAddress: {p.Address}");
+                    Console.WriteLine();
+                }
+            }
+        }
 
+        //prints all available commands
         private static void Help()
         {
             Console.WriteLine("Avaliable commands: ");
