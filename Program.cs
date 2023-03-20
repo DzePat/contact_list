@@ -83,6 +83,10 @@
                 {
                     delete(command);
                 }
+                else if (command[0] == "edit")
+                {
+                    edit(command);
+                }
                 else
                 {
                     Console.WriteLine($"Unknown command: '{command[0]}'");
@@ -97,7 +101,7 @@
             if (commandLine.Length < 2)
             {
                 string[] ph = new string[1];
-                string[] ad = new string[1];            
+                string[] ad = new string[1];
                 Console.Write("personal name: ");
                 string persname = Console.ReadLine();
                 Console.Write("surname: ");
@@ -145,7 +149,7 @@
                 {
                     foreach (Person p in contactList)
                     {
-                        
+
                         if (p != null)
                             outfile.WriteLine($"{p.Persname}|{p.Surname}|{getString(p.Phone)}|{getString(p.Address)}|{p.Birthdate}");
                     }
@@ -157,15 +161,15 @@
         public static string getString(string[] strings)
         {
             string a = "";
-            foreach(string b in strings)
+            foreach (string b in strings)
             {
                 if (b != null && a.Length == 0)
                 {
                     a = b;
                 }
-                else if(b != null)
+                else if (b != null)
                 {
-                    a = a + ";" +b;
+                    a = a + ";" + b;
                 }
             }
             return a;
@@ -179,7 +183,7 @@
                 {
                     lastFileName = "address.lis.txt";
                 }
-                else { lastFileName= commandLine[1];}
+                else { lastFileName = commandLine[1]; }
                 try
                 {
                     using (StreamReader infile = new StreamReader(GetPath(lastFileName)))
@@ -195,7 +199,7 @@
                         }
                     }
                 }
-                catch { Exception file= null;
+                catch { Exception file = null;
                     Console.WriteLine("could not find the file at the project directory");
                 }
             }
@@ -215,41 +219,41 @@
         {
             foreach (Person p in contactList)
             {
-                
-                    if (commandLine.Length < 2)
+
+                if (commandLine.Length < 2)
+                {
+                    printPerson(p);
+                }
+                else
+                {
+                    if (commandLine[1] == p.Persname)
                     {
                         printPerson(p);
                     }
-                    else
-                    {
-                        if (commandLine[1] == p.Persname)
-                        {
-                            printPerson(p);
-                        }
-                    }
-                
-            }      
+                }
+
+            }
         }
 
         //prints a single Person Object
         private static void printPerson(Person p)
         {
-                Console.WriteLine($"Name: {p.Persname} {p.Surname}");
-                int ind = 1;
-                Console.WriteLine("Phone: ");
-                foreach (string a in p.Phone)
-                {
-                    Console.WriteLine($"{ind}: {a}");
-                    ind++;
-                }
-                int index = 1;
-                Console.WriteLine("Address: ");
-                foreach (string b in p.Address)
-                {
-                    Console.WriteLine($"{index}: {b}");
-                }
-                Console.WriteLine($"Birthdate: {p.Birthdate}");
-                Console.WriteLine();
+            Console.WriteLine($"Name: {p.Persname} {p.Surname}");
+            int ind = 1;
+            Console.WriteLine("Phone: ");
+            foreach (string a in p.Phone)
+            {
+                Console.WriteLine($"{ind}: {a}");
+                ind++;
+            }
+            int index = 1;
+            Console.WriteLine("Address: ");
+            foreach (string b in p.Address)
+            {
+                Console.WriteLine($"{index}: {b}");
+            }
+            Console.WriteLine($"Birthdate: {p.Birthdate}");
+            Console.WriteLine();
         }
 
         //deletes an object from the list at the specific index or name
@@ -257,13 +261,13 @@
         {
             int index = 0;
             int theindex = -1;
-            if(commandline.Length > 1) {
-                string nameinput = commandline[1]+ " " + commandline[2];
-            for(int i = 0;i < contactList.Count;i++)
+            if (commandline.Length > 1) {
+                string nameinput = commandline[1] + " " + commandline[2];
+                for (int i = 0; i < contactList.Count; i++)
                 {
                     Person person = contactList[i];
                     string temp = person.Persname + " " + person.Surname;
-                    if(temp == nameinput)
+                    if (temp == nameinput)
                     {
                         contactList.RemoveAt(i);
                     }
@@ -274,7 +278,45 @@
 
         }
 
-
+        public static void edit(string[] commandline)
+        {
+            if (commandline.Length > 1)
+            {
+                foreach (Person a in contactList)
+                {
+                    try
+                    {
+                        if (commandline[1] + " " + commandline[2] == a.Persname + " " + a.Surname)
+                        {
+                            printPerson(a);
+                            Console.Write("name: ");
+                            a.Persname = Console.ReadLine();
+                            Console.Write("surname: ");
+                            a.Surname = Console.ReadLine();
+                            for (int i = 0; i < a.Phone.Length; i++)
+                            {
+                                Console.WriteLine($"number index {i + 1}");
+                                string newphone = Console.ReadLine();
+                                a.Phone[i] = newphone;
+                            }
+                            for (int i = 0; i < a.Address.Length; i++)
+                            {
+                                Console.WriteLine("number index {}");
+                                string newaddress = Console.ReadLine();
+                                a.Address[i] = newaddress;
+                            }
+                            Console.WriteLine("birthdate: ");
+                            a.Birthdate = Console.ReadLine();
+                        }
+                        
+                    }
+                    catch { Console.WriteLine("there is noone named by that name in thelist");
+                        break;
+                    }
+                }
+            }
+            else { Console.WriteLine("the command is not valid enter 'edit name surname' "); }
+        }
 
         //prints all available commands
         private static void Help()
