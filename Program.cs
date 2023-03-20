@@ -106,10 +106,15 @@
         //saves the array of objects to a file
         private static void SaveFile(string[] commandLine)
         {
-            string lastFileName = "address.lis";
+            string lastFileName;
             if (commandLine.Length < 2)
             {
-                using (StreamWriter outfile = new StreamWriter(lastFileName))
+                lastFileName = "address.lis.txt";
+            }
+            else { lastFileName = commandLine[1]; }
+            if (commandLine.Length < 2)
+            {
+                using (StreamWriter outfile = new StreamWriter(GetPath(lastFileName)))
                 {
                     foreach (Person p in contactList)
                     {
