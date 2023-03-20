@@ -99,6 +99,9 @@
                 string surname = Console.ReadLine();
                 Console.Write("phone: ");
                 string phone = Console.ReadLine();
+
+
+
             }
             else
             {
@@ -115,22 +118,35 @@
                 lastFileName = "address.lis.txt";
             }
             else { lastFileName = commandLine[1]; }
-            if (commandLine.Length < 2)
             {
                 using (StreamWriter outfile = new StreamWriter(GetPath(lastFileName)))
                 {
                     foreach (Person p in contactList)
                     {
+                        
                         if (p != null)
-                            outfile.WriteLine($"{p.Persname};{p.Surname};{p.Phone};{p.Address};{p.Birthdate}");
+                            outfile.Write($"{p.Persname}|{p.Surname}|{getString(p.Phone)}|{getString(p.Address)}|{p.Birthdate}");
                     }
                 }
             }
-            else
+        }
+
+        //gets a string from a list of strings
+        public static string getString(string[] strings)
+        {
+            string a = "";
+            foreach(string b in strings)
             {
-                // NYI!
-                Console.WriteLine("Not yet implemented: save /file/");
+                if (b != null && a.Length == 0)
+                {
+                    a = b;
+                }
+                else if(b != null)
+                {
+                    a = a + ";" +b;
+                }
             }
+            return a;
         }
         //adds person objects from the file to the array of objects
         private static void LoadFile(string[] commandLine)
@@ -150,7 +166,7 @@
                             string[] attrs = line.Split('|');
                             string[] phones = attrs[2].Split(';');
                             string[] addresses = attrs[3].Split(';');
-                            Person p = new Person(attrs[0], attrs[1], phones, addresses,"unknown");
+                            Person p = new Person(attrs[0], attrs[1], phones, addresses, attrs[4]);
                             contactList.Add(p);
                         }
                 }
@@ -187,6 +203,7 @@
                     {
                         Console.WriteLine($"{index}: {b}");
                     }
+                    Console.WriteLine($"Birthdate: {p.Birthdate}");
                     Console.WriteLine();
                 }
             }
