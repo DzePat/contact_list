@@ -4,10 +4,12 @@
     class MainClass
     {
         //Array of Person objects.
-        static Person[] contactList = new Person[100];
+        static Person[] contactListold = new Person[100];
+        static List<Person> contactList = contactListold.ToList<Person>();
         class Person
         {
-            private string persname, surname, phone, address, birthdate;
+            private string persname, surname, birthdate;
+            private string[] phone, address;
 
             public string Persname
             {
@@ -20,12 +22,12 @@
                 get { return surname; }
                 set { surname = value; }
             }
-            public string Phone
+            public string[] Phone
             {
                 get { return phone; }
                 set { phone = value; }
             }
-            public string Address
+            public string[] Address
             {
                 get { return address; }
                 set { address = value; }
@@ -37,7 +39,7 @@
             }
 
 
-            public Person(string persname, string surname, string phone, string address, string birthdate)
+            public Person(string persname, string surname, string[] phone, string[] address, string birthdate)
             {
                 this.persname = persname;
                 this.surname = surname;
@@ -84,6 +86,7 @@
                 }
             } while (command[0] != "quit");
         }
+        //
 
         //adds new person object to the list to be implemented
         private static void New(string[] commandLine)
@@ -147,15 +150,8 @@
                             string[] attrs = line.Split('|');
                             string[] phones = attrs[2].Split(';');
                             string[] addresses = attrs[3].Split(';');
-                            Person p = new Person(attrs[0], attrs[1], phones[0], addresses[0],"unknown");
-                            for (int ix = 0; ix < contactList.Length; ix++)
-                            {
-                                if (contactList[ix] == null)
-                                {
-                                    contactList[ix] = p;
-                                    break;
-                                }
-                            }
+                            Person p = new Person(attrs[0], attrs[1], phones, addresses,"unknown");
+                            contactList.Add(p);
                         }
                 }
             }
@@ -177,10 +173,26 @@
             {
                 if (p != null)
                 {
-                    Console.WriteLine($"Name: {p.Persname} {p.Surname}\nPhone: {p.Phone}\nAddress: {p.Address}");
+                    Console.WriteLine($"Name: {p.Persname} {p.Surname}");
+                    int ind = 1;
+                    Console.WriteLine("Phone: ");
+                    foreach (string a in p.Phone)
+                    {
+                        Console.WriteLine($"{ind}: {a}");
+                        ind++;
+                    }
+                    int index = 1;
+                    Console.WriteLine("Address: ");
+                    foreach (string b in p.Address)
+                    {
+                        Console.WriteLine($"{index}: {b}");
+                    }
                     Console.WriteLine();
                 }
             }
+
+
+            
         }
 
         //prints all available commands
