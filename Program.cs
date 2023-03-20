@@ -4,8 +4,7 @@
     class MainClass
     {
         //Array of Person objects.
-        static Person[] contactListold = new Person[100];
-        static List<Person> contactList = contactListold.ToList<Person>();
+        static List<Person> contactList = new List<Person>();
         class Person
         {
             private string persname, surname, birthdate;
@@ -80,6 +79,10 @@
                 {
                     print(command);
                 }
+                else if (command[0] == "delete")
+                {
+                    delete(command);
+                }
                 else
                 {
                     Console.WriteLine($"Unknown command: '{command[0]}'");
@@ -110,17 +113,22 @@
             }
             else
             {
-                int comlength = commandLine.Length;
-                string tosplit = "";
-                int i = 1;
-                while(i < comlength) { 
-                    tosplit = tosplit+" "+ commandLine[i];
-                    i++;
+                try
+                {
+                    int comlength = commandLine.Length;
+                    string tosplit = "";
+                    int i = 1;
+                    while (i < comlength)
+                    {
+                        tosplit = tosplit + " " + commandLine[i];
+                        i++;
+                    }
+                    string[] splits = tosplit.Split("|");
+                    string[] phonesplits = splits[2].Split(";");
+                    string[] addresssplits = splits[3].Split(";");
+                    contactList.Add(new Person(splits[0], splits[1], phonesplits, addresssplits, splits[4]));
                 }
-                string[] splits = tosplit.Split("|");
-                string[] phonesplits = splits[2].Split(";");
-                string[] addresssplits = splits[3].Split(";");
-                contactList.Add(new Person(splits[0], splits[1], phonesplits, addresssplits, splits[4]));
+                catch { Console.WriteLine("the input was not of type name|surname|phone|address|birthdate"); }
             }
         }
         //saves the array of objects to a file
@@ -162,7 +170,7 @@
             }
             return a;
         }
-        //adds person objects from the file to the array of objects
+        //adds person objects from the file to the list of objects
         private static void LoadFile(string[] commandLine)
         {
             string lastFileName;
@@ -172,7 +180,9 @@
                     lastFileName = "address.lis.txt";
                 }
                 else { lastFileName= commandLine[1];}
-                using (StreamReader infile = new StreamReader(GetPath(lastFileName)))
+                try
+                {
+                    using (StreamReader infile = new StreamReader(GetPath(lastFileName)))
                     {
                         string line;
                         while ((line = infile.ReadLine()) != null)
@@ -183,6 +193,10 @@
                             Person person = new Person(attrs[0], attrs[1], phones, addresses, attrs[4]);
                             contactList.Add(person);
                         }
+                    }
+                }
+                catch { Exception file= null;
+                    Console.WriteLine("could not find the file at the project directory");
                 }
             }
         }
@@ -196,13 +210,12 @@
             string path = projectDirectory + "\\" + lastFileName;
             return path;
         }
-        //prints all the Objects in the array
+        //prints all the Objects in list or of specfic person
         public static void print(string[] commandLine)
         {
             foreach (Person p in contactList)
             {
-                if (p != null)
-                {
+                
                     if (commandLine.Length < 2)
                     {
                         printPerson(p);
@@ -214,10 +227,11 @@
                             printPerson(p);
                         }
                     }
-                }
+                
             }      
         }
 
+        //prints a single Person Object
         private static void printPerson(Person p)
         {
                 Console.WriteLine($"Name: {p.Persname} {p.Surname}");
@@ -237,6 +251,30 @@
                 Console.WriteLine($"Birthdate: {p.Birthdate}");
                 Console.WriteLine();
         }
+
+        //deletes an object from the list at the specific index or name
+        public static void delete(string[] commandline)
+        {
+            int index = 0;
+            int theindex = -1;
+            if(commandline.Length > 1) {
+                string nameinput = commandline[1]+ " " + commandline[2];
+            for(int i = 0;i < contactList.Count;i++)
+                {
+                    Person person = contactList[i];
+                    string temp = person.Persname + " " + person.Surname;
+                    if(temp == nameinput)
+                    {
+                        contactList.RemoveAt(i);
+                    }
+                    index++;
+                }
+            }
+            else { contactList.Clear(); }
+
+        }
+
+
 
         //prints all available commands
         private static void Help()
